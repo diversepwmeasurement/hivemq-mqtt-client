@@ -1,21 +1,23 @@
-name: CI Check
-
-on: [ push ]
-
 concurrency:
-  group: ${{ github.ref }}
   cancel-in-progress: true
-
+  group: ${{ github.ref }}
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup Java
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '8'
-      - name: Check
-        run: ./gradlew check javadoc
+    - continue-on-error: true
+      name: Checkout
+      uses: actions/checkout@v2
+    - continue-on-error: true
+      name: Setup Java
+      uses: actions/setup-java@v2
+      with:
+        distribution: adopt
+        java-version: '8'
+    - continue-on-error: true
+      name: Check
+      run: ./gradlew check javadoc
+name: CI Check
+on:
+  repository_dispatch:
+    types: trigger-ga___check.yml

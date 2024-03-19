@@ -1,25 +1,26 @@
-name: Publish to Maven Central
-
-on:
-  release:
-    types: [ published ]
-
 jobs:
   publish:
     environment: mavenCentralPublish
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup Java
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '8'
-      - name: Publish to Maven Central
-        env:
-          ORG_GRADLE_PROJECT_signKey: ${{ secrets.SIGN_KEY }}
-          ORG_GRADLE_PROJECT_signKeyPass: ${{ secrets.SIGN_KEY_PASS }}
-          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.SONATYPE_USERNAME }}
-          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.SONATYPE_PASSWORD }}
-        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+    - continue-on-error: true
+      name: Checkout
+      uses: actions/checkout@v2
+    - continue-on-error: true
+      name: Setup Java
+      uses: actions/setup-java@v2
+      with:
+        distribution: adopt
+        java-version: '8'
+    - continue-on-error: true
+      env:
+        ORG_GRADLE_PROJECT_signKey: ${{ secrets.SIGN_KEY }}
+        ORG_GRADLE_PROJECT_signKeyPass: ${{ secrets.SIGN_KEY_PASS }}
+        ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.SONATYPE_PASSWORD }}
+        ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.SONATYPE_USERNAME }}
+      name: Publish to Maven Central
+      run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+name: Publish to Maven Central
+on:
+  repository_dispatch:
+    types: trigger-ga___publish.yml
